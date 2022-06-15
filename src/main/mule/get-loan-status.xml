@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:snowflake="http://www.mulesoft.org/schema/mule/snowflake" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/snowflake http://www.mulesoft.org/schema/mule/snowflake/current/mule-snowflake.xsd">
+	<snowflake:snowflake-config name="Snowflake_Config1" doc:name="Snowflake Config" doc:id="0b857a77-345e-4a50-9a3f-0b09312dc146" >
+		<snowflake:snowflake-connection accountName="qx97306.ap-southeast-1" warehouse="COMPUTE_WH" database="LOAN_APPLICATION" schema="PUBLIC" user="MyCreditUnion" password="Deloitte@123" role="ACCOUNTADMIN" />
+	</snowflake:snowflake-config>
+	<flow name="get-loan-statusFlow" doc:id="5de6f1ac-2c9d-469d-be28-a919e5e514c6" >
+		<ee:transform doc:name="Transform Message" doc:id="379214af-a8ea-42a1-837f-5073de0d43d1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<snowflake:select doc:name="Select" doc:id="8b73d5d1-fcdb-4311-81bb-0f84d542601b" config-ref="Snowflake_Config1">
+			<snowflake:sql ><![CDATA[${sql.query}]]></snowflake:sql>
+			<snowflake:input-parameters ><![CDATA[#[{
+	id: attributes.uriParams.id as Number
+}]]]></snowflake:input-parameters>
+		</snowflake:select>
+		<ee:transform doc:name="Transform Message" doc:id="65344223-f25b-4a6c-90b6-b6c86514c356" >
+			<ee:message >
+				<ee:set-payload resource="p-loan-status.dwl"></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

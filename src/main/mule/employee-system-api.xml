@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:snowflake="http://www.mulesoft.org/schema/mule/snowflake" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd  http://www.mulesoft.org/schema/mule/snowflake http://www.mulesoft.org/schema/mule/snowflake/current/mule-snowflake.xsd">
-    <http:listener-config name="employee-system-api-httpListenerConfig">
-        <http:listener-connection host="localhost" port="8081" />
-    </http:listener-config>
     <apikit:config name="employee-system-api-config" api="resource::096484fd-dcfd-4f60-9f58-aecc0e2e110f:employee-system-api:1.0.2:raml:zip:employee-system-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-    <snowflake:snowflake-config name="Snowflake_Config" doc:name="Snowflake Config" doc:id="e8cf1a9d-45a8-43cf-abfd-164e76bb26f4">
-        <snowflake:snowflake-connection accountName="qx97306.ap-southeast-1" warehouse="COMPUTE_WH" database="LOAN_APPLICATION" schema="PUBLIC" user="MyCreditUnion" password="Deloitte@123" role="ACCOUNTADMIN" />
-    </snowflake:snowflake-config>
-    <flow name="employee-system-api-main">
-        <http:listener config-ref="employee-system-api-httpListenerConfig" path="/api/*">
+	<snowflake:snowflake-config name="Snowflake_Config" doc:name="Snowflake Config" doc:id="59f7ea68-bb1b-4e6e-bd27-53cf34c9f6cc" >
+		<snowflake:snowflake-connection accountName="qx97306.ap-southeast-1" warehouse="COMPUTE_WH" database="LOAN_APPLICATION" schema="PUBLIC" user="MyCreditUnion" password="Deloitte@123" role="ACCOUNTADMIN" />
+	</snowflake:snowflake-config>
+	<flow name="employee-system-api-main">
+        <http:listener path="/api/*" config-ref="employee-system-api-listener">
             <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
         <apikit:router config-ref="employee-system-api-config" />
@@ -100,13 +97,13 @@ output application/json
         </error-handler>
     </flow>
     <flow name="employee-system-api-console">
-        <http:listener config-ref="employee-system-api-httpListenerConfig" path="/console/*">
+        <http:listener path="/console/*" config-ref="employee-system-api-listener">
             <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
         <apikit:console config-ref="employee-system-api-config" />
@@ -159,15 +156,8 @@ output application/json
             </ee:message>
         </ee:transform>
     </flow>
-    <flow name="put:\update-employee-details:application\json:employee-system-api-config">
-        <snowflake:insert doc:name="Insert" doc:id="43e14bde-da30-4602-80a4-917102920c35" config-ref="Snowflake_Config">
-            <snowflake:sql><![CDATA[insert into "LOAN_APPLICATION"."PUBLIC"."BANK_EMPLOYEE"(NAME, TYPE, EMAIL) values (:name, :typ, :email)]]></snowflake:sql>
-            <snowflake:input-parameters><![CDATA[#[{
-	name: payload.name,
-	typ: payload.empType,
-	email: payload.email
-}]]]></snowflake:input-parameters>
-        </snowflake:insert>
+	<flow name="put:\update-employee-details:application\json:employee-system-api-config">
+        <flow-ref doc:name="update-employee" doc:id="938e7fd5-3afb-4d33-85fc-88a39f0c1638" name="post-update-employee-detailsFlow"/>
 		<ee:transform>
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
@@ -179,32 +169,12 @@ output application/json
             </ee:message>
         </ee:transform>
     </flow>
-    <flow name="get:\get-loan-status\(id):employee-system-api-config">
+	<flow name="get:\get-loan-status\(id):employee-system-api-config">
         <ee:transform>
             <ee:variables>
                 <ee:set-variable variableName="id">attributes.uriParams.'id'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <snowflake:select doc:name="Select" doc:id="77beb3b5-5596-45b0-bcb6-b958f234b403" config-ref="Snowflake_Config">
-			<snowflake:sql ><![CDATA[select * from "LOAN_APPLICATION"."PUBLIC"."LOAN_STATUS"
-where LOAN_ID = :id]]></snowflake:sql>
-			<snowflake:input-parameters ><![CDATA[#[{
-	id: attributes.uriParams.id as Number
-}]]]></snowflake:input-parameters>
-		</snowflake:select>
-		<ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  loanID: payload.LOAN_ID[0],
-  userID: payload.USERID[0],
-  status: payload.STATUS[0],
-  reason: payload.REASON[0],
-  amount: payload.AMOUNT[0]
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="loan-status" doc:id="55c60231-6bb9-4376-98c7-12fd268eacca" name="get-loan-statusFlow"/>
     </flow>
 </mule>

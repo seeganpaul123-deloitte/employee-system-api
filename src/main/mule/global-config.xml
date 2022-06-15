@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:snowflake="http://www.mulesoft.org/schema/mule/snowflake" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/snowflake http://www.mulesoft.org/schema/mule/snowflake/current/mule-snowflake.xsd">
+	<http:listener-config name="employee-system-api-listener" doc:name="HTTP Listener config" doc:id="bcd12bc0-3fe8-4d49-a31d-b1fbf78e44c3" >
+		<http:listener-connection host="localhost" port="8081" readTimeout="3000" />
+	</http:listener-config>
+	<snowflake:snowflake-config name="main_snownflake-connector" doc:name="Snowflake Config" doc:id="03e93ba3-5263-42ca-bc88-463d2a651fe8" >
+		<snowflake:snowflake-connection accountName="qx97306.ap-southeast-1" warehouse="COMPUTE_WH" database="LOAN_APPLICATION" schema="PUBLIC" user="MyCreditUnion" password="Deloitte@123" role="ACCOUNTADMIN" />
+	</snowflake:snowflake-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="26145ffc-96a2-4691-bc4d-94bc209fd907" file="select.properties" />
+	<configuration-properties doc:name="Configuration properties" doc:id="16286fd1-669c-461b-b9b2-d19a299c0da6" file="insert.properties" />
+</mule>

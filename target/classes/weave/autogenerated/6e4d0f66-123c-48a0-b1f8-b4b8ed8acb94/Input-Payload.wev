@@ -1,0 +1,10 @@
+%dw 2.0
+
+type auto_6e4d0f66_123c_48a0_b1f8_b4b8ed8acb94_Input_Payload = {
+  Msg_id: String, 
+  STATUS: String, 
+  USER_ID: Number, 
+  LOAN_ID: Number, 
+  _?: Any
+}
+

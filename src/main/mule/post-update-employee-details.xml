@@ -9,7 +9,7 @@ http://www.mulesoft.org/schema/mule/snowflake http://www.mulesoft.org/schema/mul
 		<ee:transform doc:name="Transform Message" doc:id="bfc0e033-6ca0-447e-9398-70b16d65b1cd" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
+output application/json
 ---
 {
 	name: payload.name,

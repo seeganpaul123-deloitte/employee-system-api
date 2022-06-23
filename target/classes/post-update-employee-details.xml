@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:snowflake="http://www.mulesoft.org/schema/mule/snowflake" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/snowflake http://www.mulesoft.org/schema/mule/snowflake/current/mule-snowflake.xsd">
+	<flow name="post-update-employee-detailsFlow" doc:id="8a22ccb7-eb02-4a01-a62b-7556a130c836" >
+		<ee:transform doc:name="Transform Message" doc:id="bfc0e033-6ca0-447e-9398-70b16d65b1cd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	name: payload.name,
+	email: payload.email,
+	empType: payload.empType 
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<snowflake:insert doc:name="Insert" doc:id="f5003a2c-38cf-433c-a4ef-86d3c6f4b621" config-ref="main_snownflake-connector">
+			<snowflake:sql ><![CDATA[${insert.query}]]></snowflake:sql>
+			<snowflake:input-parameters ><![CDATA[#[{
+	name: payload.name,
+	typ: payload.empType,
+	email: payload.email
+}]]]></snowflake:input-parameters>
+		</snowflake:insert>
+	</flow>
+</mule>

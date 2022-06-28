@@ -1,0 +1,7 @@
+{
+  "loan_id": 1,
+  "user_id": 1,
+  "status": "Denied",
+  "reason": "Loan amount is more than 400000",
+  "amount": 400000
+}

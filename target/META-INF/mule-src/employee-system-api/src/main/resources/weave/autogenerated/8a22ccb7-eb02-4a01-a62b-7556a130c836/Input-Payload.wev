@@ -1,0 +1,9 @@
+%dw 2.0
+
+type auto_8a22ccb7_eb02_4a01_a62b_7556a130c836_Input_Payload = {
+  empType: String, 
+  name: String, 
+  email: String, 
+  _?: Any
+}
+

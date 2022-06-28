@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sqs="http://www.mulesoft.org/schema/mule/sqs" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:snowflake="http://www.mulesoft.org/schema/mule/snowflake"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/snowflake http://www.mulesoft.org/schema/mule/snowflake/current/mule-snowflake.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/sqs http://www.mulesoft.org/schema/mule/sqs/current/mule-sqs.xsd">
+	<http:listener-config name="employee-system-api-listener" doc:name="HTTP Listener config" doc:id="bcd12bc0-3fe8-4d49-a31d-b1fbf78e44c3" >
+		<http:listener-connection host="localhost" port="8085"/>
+	</http:listener-config>
+	<snowflake:snowflake-config name="main_snownflake-connector" doc:name="Snowflake Config" doc:id="03e93ba3-5263-42ca-bc88-463d2a651fe8" >
+		<snowflake:snowflake-connection accountName="${secure::db.Account Name}" warehouse="${secure::db.Warehouse}" database="${secure::db.Database}" schema="${secure::db.Schema}" user="${secure::db.User}" password="${secure::db.Password}" role="ACCOUNTADMIN" />
+	</snowflake:snowflake-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="26145ffc-96a2-4691-bc4d-94bc209fd907" file="select.properties" />
+	<configuration-properties doc:name="Configuration properties" doc:id="16286fd1-669c-461b-b9b2-d19a299c0da6" file="insert.properties" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="bb070bee-089b-4211-9c21-516d2b246cee" file="Properties.yaml" key="teamproject" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<secure-properties:config name="mg1_Properties_Config1" doc:name="Secure Properties Config" doc:id="3bf82511-6250-4307-862b-9a83f7d4cd27" file="mg1_properties.yaml" key="aws" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<secure-properties:config name="mg2_Properties_Config" doc:name="Secure Properties Config" doc:id="576446ec-fb9e-4610-89b3-b877c561b903" file="mg2_properties.yaml" key="MG2" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<sqs:config name="mg1_SQS_Configuration" doc:name="Amazon SQS Configuration" doc:id="77f7b7a7-de2c-45db-884c-130aafa8e2a0" defaultQueueUrl="${secure::aws.Queue Url}" >
+		<sqs:basic-connection testQueueArn="${secure::aws.arn}" accessKey="${secure::aws.Access Key}" secretKey="${secure::aws.Secret Key}" />
+	</sqs:config>
+	<sqs:config name="mg2_SQS_Configuration" doc:name="Amazon SQS Configuration" doc:id="2a2a4238-b727-46d0-bc9e-074138b05794" defaultQueueUrl="${secure::MG2.Queue Url}" >
+		<sqs:basic-connection testQueueArn="${secure::MG2.arn}" accessKey="${secure::MG2.Access Key}" secretKey="${secure::MG2.Secret Key}" />
+	</sqs:config>
+</mule>

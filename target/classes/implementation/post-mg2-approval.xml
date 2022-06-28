@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:snowflake="http://www.mulesoft.org/schema/mule/snowflake" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/snowflake http://www.mulesoft.org/schema/mule/snowflake/current/mule-snowflake.xsd">
+	<flow name="post-mg2-approval" doc:id="4dafae97-2d6e-4537-a6e6-1b74c8e3ce8f" >
+		<ee:transform doc:name="Transform Message" doc:id="2b44e78f-3431-4eb8-b51f-7260eb34b936" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="details" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="72b485c1-cb58-4467-aa35-a37c8758620f" message="#[payload]"/>
+		<snowflake:update doc:name="Update" doc:id="ac7ec57c-1459-4d0d-99a5-bc730628f526" config-ref="main_snownflake-connector">
+			<snowflake:sql ><![CDATA[update "LOAN_APPLICATION"."PUBLIC"."LOAN_STATUS"
+set REASON = :reason, STATUS = :status
+where LOAN_ID = :loan_id]]></snowflake:sql>
+			<snowflake:input-parameters ><![CDATA[#[{
+	reason: payload.reason,
+	status: payload.status,
+	loan_id: payload.loan_id
+}]]]></snowflake:input-parameters>
+		</snowflake:update>
+		<ee:transform doc:name="Transform Message" doc:id="9af2cbb8-2a70-442e-84da-2cb40d1e8ed6">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	loan_id: vars.details.loan_id,
+	user_id: vars.details.user_id,
+	message:"customer loan status is updated"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

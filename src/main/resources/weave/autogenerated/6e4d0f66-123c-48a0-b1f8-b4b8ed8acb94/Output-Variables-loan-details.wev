@@ -1,4 +1,0 @@
-%dw 2.0
-
-type auto_6e4d0f66_123c_48a0_b1f8_b4b8ed8acb94_Output_Variables_loan_details = Array<{|  LOAN_ID: Number,   USERID?: Number,   EMAIL?: String,   LOAN_AMOUNT?: Number,   TENURE?: Number,   INTERSET?: Number,   TYPE?: String|}>
-

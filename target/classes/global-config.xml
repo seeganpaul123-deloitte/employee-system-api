@@ -8,7 +8,7 @@ http://www.mulesoft.org/schema/mule/snowflake http://www.mulesoft.org/schema/mul
 http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
 http://www.mulesoft.org/schema/mule/sqs http://www.mulesoft.org/schema/mule/sqs/current/mule-sqs.xsd">
 	<http:listener-config name="employee-system-api-listener" doc:name="HTTP Listener config" doc:id="bcd12bc0-3fe8-4d49-a31d-b1fbf78e44c3" >
-		<http:listener-connection host="localhost" port="8085"/>
+		<http:listener-connection host="0.0.0.0" port="8081"/>
 	</http:listener-config>
 	<snowflake:snowflake-config name="main_snownflake-connector" doc:name="Snowflake Config" doc:id="03e93ba3-5263-42ca-bc88-463d2a651fe8" >
 		<snowflake:snowflake-connection accountName="${secure::db.Account Name}" warehouse="${secure::db.Warehouse}" database="${secure::db.Database}" schema="${secure::db.Schema}" user="${secure::db.User}" password="${secure::db.Password}" role="ACCOUNTADMIN" />
